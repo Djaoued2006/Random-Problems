@@ -1,0 +1,15 @@
+Welcome!
+
+type the number of the function you want to execute!
+
+1 - Add User
+2 - Add Post
+
+3 - Delete User
+4 - Delete Post
+
+5 - View Followers
+6 - View Following
+
+7 - View Profile
+8 - View Post
