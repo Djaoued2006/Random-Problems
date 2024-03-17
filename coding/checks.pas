@@ -2,9 +2,13 @@ unit checks;
 
 interface
 
+    uses stack;
+
     function removeSpaces(s : string) : string;
     function removeEndingZeros(s : string) : string;
     function replaceStrings(s1, s2 , s : string) : string;
+    function checkParentheses(s : string) : boolean;
+    function hasParentheses(s: string) : boolean;
 
 implementation
 
@@ -83,6 +87,64 @@ function replaceStrings(s1, s2 , s : string) : string;
 
         replaceStrings := result;
     end;
+
+function checkParentheses(s : string) : boolean;
+
+    var i , slen : integer;
+        myStack : pNode;
+        result : boolean;
+    
+    begin
+        myStack := NIL;
+        i := 1;
+        slen := length(s);
+        result := TRUE;
+
+        while (i <= slen) do 
+            begin
+                if (s[i] = '(') then 
+                    begin 
+                        push(myStack , s[i]);
+                    end;
+
+                if (s[i] = ')') then 
+                    if (stackEmpty(myStack)) then 
+                        begin 
+                            result := FALSE;
+                            break;
+                        end
+                    else    
+                        begin 
+                            pop(myStack);
+                        end;
+                    
+                inc(i);
+            end; 
+        
+        if (result) then 
+            checkParentheses := stackEmpty(myStack);
+    end;
+
+function hasParentheses(s: string) : boolean;
+
+    var i , slen : integer;
+        result : boolean;
+    
+    begin
+        result := FALSE;
+
+        i := 1;
+        slen := length(s);
+
+        while ((not result) and (i <= slen)) do 
+            begin
+                result := (s[i] = '(');
+                inc(i); 
+            end; 
+        
+        hasParentheses := result;
+    end;
+
 
 
 

@@ -4,6 +4,8 @@ interface
 
     uses sysUtils, checks;
 
+    const NAN = 'Nan';
+
     function min(a , b : integer) : integer;
 
     function add(a , b : integer) : integer;
@@ -47,6 +49,12 @@ function power(base , expo : integer) : longint;
             power := power * base; 
     end;
 
+function isFloat(s :string): boolean;
+
+    begin
+        isFloat := (pos('.' , s) <> 0); 
+    end;
+
 function int(s : string) : integer;
 
     var result : integer;
@@ -78,16 +86,24 @@ function int(s : string) : integer;
 function str(number : integer) : string;   
     
     var result : string;
+        isNegative : boolean;
 
     begin
         result := '';
+        isNegative := (number < 0);
+
         if (number = 0) then result := '0'
-        else 
-            while (number <> 0) do 
-                begin
-                    result := chr(number mod 10 + ord('0')) + result;
-                    number := number div 10; 
-                end;  
+        else
+            begin 
+                if (isNegative) then number := number * (-1);
+                while (number <> 0) do 
+                    begin
+                        result := chr(number mod 10 + ord('0')) + result;
+                        number := number div 10; 
+                    end;  
+            end;
+        
+        if (isNegative) then result := '_' + result;
             
         str := result;
     end;
@@ -106,14 +122,30 @@ function frac(number : real; precision : integer) : Integer;
 
 function str(number : real ; precision : integer) : string;
 
+    var isNegative : boolean;
+
     begin
-        str := str(int(number)) + '.' + str(frac(number , precision));
+        isNegative := FALSE;
+
+        if (number < 0) then 
+            begin
+                number := number * (-1);
+                isNegative := TRUE; 
+            end;
+            
+        str := removeEndingZeros(str(int(number)) + '.' + str(frac(number , precision)));
+
+        if (isNegative) then 
+            str := '_' + str;
     end;
 
 function float(s : string) : real;
 
     begin
-        float := int(copy(s, 1, pos('.' , s) - 1)) + int(Copy(s , pos('.' , s) + 1, 3)) / power(10 , 3) ;
+        if (isFloat(s)) then 
+            float := int(copy(s, 1, pos('.' , s) - 1)) + int(Copy(s , pos('.' , s) + 1, 3)) / power(10 , 3)
+        else 
+            float := int(s);
     end;
 
 function add(a , b : integer) : integer;
@@ -143,28 +175,28 @@ function divide(a, b: integer) : real;
 function add(a , b : string) : string;
 
     begin
-        add := str(int(a) + int(b)); 
+        add := str(float(a) + float(b) , 3); 
     end;
 
 function sub(a , b : string): string;
 
     begin
-        sub := str(int(a) - int(b)); 
+        sub := str(float(a) - float(b) , 3); 
     end;
 
 function multiply(a , b : string) : string;
 
     begin
-        multiply := str(int(a) * int(b)); 
+        multiply := str(float(a) * float(b) , 3); 
     end;
 
 function divide(a, b: string; precision : integer) : string;
 
     begin
-        if (int(b) = 0) then 
-            divide := 'Nan'
+        if (float(b) = 0) then 
+            divide := NAN
         else 
-            divide := removeEndingZeros(str(int(a) / int(b) , precision)); 
+            divide := removeEndingZeros(str(float(a) / float(b) , precision)); 
     end;
 
 
@@ -172,12 +204,15 @@ function divide(a, b: string; precision : integer) : string;
 function makeBasicCalculation(op1 , op2 : string ; operation : char): string;
 
     begin
-        case operation of  
-            '+' : makeBasicCalculation := add(op1, op2);
-            '-' : makeBasicCalculation := sub(op1 , op2);
-            '*' : makeBasicCalculation := multiply(op1, op2);
-            '/' : makeBasicCalculation := divide(op1, op2 , 3);
-        end; 
+        if ((op1 = NAN) or (op2 = NAN)) then 
+            makeBasicCalculation := NAN
+        else
+            case operation of  
+                '+' : makeBasicCalculation := add(op1, op2);
+                '-' : makeBasicCalculation := sub(op1 , op2);
+                '*' : makeBasicCalculation := multiply(op1, op2);
+                '/' : makeBasicCalculation := divide(op1, op2 , 3);
+            end; 
     end;
 
 begin 

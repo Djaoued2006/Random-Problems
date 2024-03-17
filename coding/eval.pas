@@ -2,12 +2,13 @@ unit eval;
 
 interface
 
-    uses sysUtils , checks , convert;
+    uses sysUtils , checks , convert , stack;
 
     const operations : array of char = ('+' , '-' , '*' , '/');
 
     function evaluateSingleExpression(s : string): string;
     function evaluateBasicExpression(s : string): string;
+    function evaluateComplexExpression(s : string) : string;
 
 implementation
 
@@ -164,11 +165,9 @@ function calculateAllOperations(s: string ; operation : char) : string;
                 op2 := getOperand2(operation , s); 
                 temp := makeBasicCalculation(op1 , op2 , operation);
 
-                writeln(op1 , ' ' , operation ,' ' , op2 , ' = ' , temp);
-
-                if (temp = 'Nan') then 
+                if (temp = NAN) then 
                     begin 
-                        calculateAllOperations := temp;
+                        s := temp;
                         break;
                     end
                 else
@@ -186,13 +185,14 @@ function evaluateBasicExpression(s : string): string;
         numberOfOperations : integer;
     
     begin
+        s := removeSpaces(s);
         numberOfOperations := countNumberOfOperations(s);
 
         if (numberOfOperations = 0) then evaluateBasicExpression := s
         else 
             begin
                 s := calculateAllOperations(s , '/');
-                if (s <> 'Nan') then
+                if (s <> NAN) then
                     begin 
                         s := calculateAllOperations(s , '*');
                         s := calculateAllOperations(s , '-');
@@ -204,11 +204,80 @@ function evaluateBasicExpression(s : string): string;
     end;
 
 
-function evaluateComplexExpression(s : string) : integer;
+function evaluateComplexExpression(s : string) : string;
+
+    var parenthesesStack , indexStack : pNode;
+        i , slen , index : integer;
+        tempString , operationString , result : string;
 
     begin
         //suppose the parentheses are good!
+        evaluateComplexExpression := NAN;
 
+        {the idea is , each time i encouter '(' , i push it to the stack and an index of it 
+        then when i encounter ')' with no '(' available in the stack, i go back to the last
+        index (top of the stack) and start making calculations!}
+
+        writeln('the mathematical operations : ' , s);
+
+        writeln;
+
+        s := removeSpaces(s);
+        
+        if (checkParentheses(s)) then 
+            begin 
+                parenthesesStack := NIL;
+                indexStack := NIL;
+
+                i := 1;
+
+                slen := length(s);
+
+                while ((i <= slen) and (hasParentheses(s))) do 
+                    begin
+
+                        if (s[i] = '(') then 
+                            begin
+                                push(parenthesesStack , s[i]);
+                                push(indexStack , str(i)); 
+                            end; 
+                        
+                        if (s[i] = ')') then 
+                            begin
+                                pop(parenthesesStack); 
+
+                                index := int(pop(indexStack));
+
+                                tempString := copy(s , index , i - index + 1);
+
+                                
+
+                                operationString := copy(tempString , 2 , i - index - 1);
+                                result := evaluateBasicExpression(operationString);
+
+                                if (result = NAN) then 
+                                    begin
+                                        s := result;
+                                        break;
+                                    end;
+
+
+                                writeln(tempString , ' = ' , result);
+                                s := replaceStrings(tempString , result , s);
+                                slen := length(s);
+                                writeln('the strings is now : ' , s);
+
+                                writeln;
+                                i := 0;
+                            end;
+                        
+                        inc(i);
+                    end;
+            end;
+
+        evaluateComplexExpression := evaluateBasicExpression(s);
+        freeStack(indexStack);
+        freeStack(parenthesesStack);
     end;
 
 
