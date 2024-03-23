@@ -1,4 +1,4 @@
-uses convert, eval , mathematics;
+uses mathematics, convert, equation;
 
 
 procedure main();
@@ -6,19 +6,8 @@ procedure main();
     var s : string;
 
     begin
-        s := '(2*3+(-1)+(-2)/2+12*4)';
-        
-        // writeln(s);
-        writeln(s);
-
-        s := evaluateExpression(s);
-        // writeln(priorityEvaluation(s , '+'));
-
-
-        writeln(s);
-
-        // writeln(('1293.32'));
-
+        write('type the equation: ');readln(s);
+        writeln('x = ', solveFirstOrderEquation(s));
     end;
 
 

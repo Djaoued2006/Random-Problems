@@ -162,7 +162,6 @@ function priorityEvaluation(s, operation: string): string;
                         
                         nextOpIndex := getNextOperation(s , i);
 
-                        writeln(operand1 , operation , operand2 , ' = ' , result);
 
                         if (isNegative(operand1)) then lastOpIndex := lastOpIndex - 2;
                         if (isNegative(operand2)) then nextOpIndex := nextOpIndex + length(operand2) - 1;
@@ -206,45 +205,13 @@ function evaluateExpression(s: string): string;
     var i, index , slen: integer;
         operand1 , operand2 , operation: string;
         result, temp : string;
-        opStack , operandStack: pNode;
         parenthesesStack : pNode;
 
     begin
-        opStack := NIL;
-        operandStack := NIL;
-
         temp := '';
-
-        // for i := 1 to length(s) do 
-        //     begin
-        //         if isOperation(s[i]) then 
-        //             if not (s[i-1] = '(') then
-        //                 begin 
-        //                     if (not isEmpty(opStack)) then 
-        //                         begin
-        //                             operand2 := temp;
-        //                             operand1 := pop(operandStack);
-        //                             operation := pop(opStack);
-        //                             result := calculate(operand1 , operand2 , operation);
-        //                             if (result = NAN) then 
-        //                                 break 
-        //                             else 
-        //                                 push(operandStack , result);
-        //                             writeln(operand1 , operation , operand2 , ' = ' , result);
-        //                         end
-        //                     else 
-        //                         push(operandStack, temp);
-                        
-        //                     push(opStack , s[i]);
-        //                     temp := '';
-        //                 end
-        //             else 
-        //                 temp := temp + s[i]
-        //         else 
-        //             temp := temp + s[i];
-        //     end;
         
         parenthesesStack := NIL;
+        s := removeSpaces(s);
 
         i := 1;
         slen := length(s);
@@ -273,16 +240,11 @@ function evaluateExpression(s: string): string;
                         s := copy(s, 1 , index - 1) + result + copy(s , i + 1 , 255);
                         slen := length(s);
                         i := index + length(result) - 1; 
-
-                        writeln(s);
-                        writeln;
                     end;
 
                 inc(i);     
             end;
-        
-        // empty(operandStack);
-        // empty(opStack);
+        empty(parenthesesStack);
         evaluateExpression := evaluateString(s);
     end;
 

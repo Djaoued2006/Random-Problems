@@ -8,6 +8,8 @@ interface
     function toString(n: integer): string;
     function toString(n: real): string;
     function toInteger(s: string): integer;
+    procedure removeEndingZeros(var s: string);
+    function removeSpaces(s: string): string;
 
 implementation
 
@@ -93,6 +95,41 @@ function toNumber(s: string): real;
                 toNumber := toInteger(intPart(s)) + toInteger(fracPart(s)) / power(10 , min(length(fracPart(s)), 3));
     end;
 
+procedure removeEndingZeros(var s: string);
+
+    var right: integer;
+
+    begin         
+        if (isReal(s)) then 
+            begin 
+                right := length(s);
+                while (right > 0) do 
+                    begin
+                        if (s[right] <> '0') then break;
+                        right := right - 1; 
+                    end; 
+                if (s[right] = '.') then dec(right);
+                s := copy(s, 1, right);
+            end;
+    end;
+
+function removeSpaces(s: string): string;
+
+    var slen, i: integer;
+        temp: string;
+        
+    begin
+        slen := length(s); 
+        temp := '';
+
+        for i := 1 to slen do 
+            if (s[i] <> ' ') then 
+                temp := temp + s[i];
+        
+        removeSpaces := temp;
+    end;
+
+    
 
 begin 
 end.

@@ -10,8 +10,12 @@ interface
     
     function power(base, expo: integer): longint;
     function isInteger(s: string): boolean;
+    function isReal(s: string): boolean;
     function isNegative(s: string): boolean;
     function min(a, b : integer): integer;
+
+    function getAbsValue(s: string): string;
+    function changeSign(s: string): string;
 
 
 implementation
@@ -76,6 +80,29 @@ function min(a, b : integer): integer;
             min := b; 
     end;
 
+function getAbsValue(s: string): string;
+
+    begin
+        if (isNegative(s)) then     
+            getAbsValue := copy(s, 3, length(s) - 3)
+        else 
+            getAbsValue := s;
+    end;
+
+function changeSign(s: string): string;
+
+    begin
+        if (isNegative(s)) then     
+            changeSign := getAbsValue(s)
+        else 
+            changeSign := '(-' + s + ')'; 
+    end;
+
+function isReal(s: string): boolean;
+
+    begin
+        isReal := (pos('.' , s) <> 0); 
+    end;
 
 begin 
 end.
