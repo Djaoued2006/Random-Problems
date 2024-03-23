@@ -1,0 +1,1 @@
+i need to edit the frac function and intPart function (problem : they don't adapt to the new syntax of negative number (-number))
